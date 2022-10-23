@@ -1,0 +1,24 @@
+/****************************** 菜单相关样式变量 ******************************/
+$menu-text-color: #fff;
+$menu-active-text-color: #ffd04b;
+$menu-background-color: #545c64;
+$menu-logo-title-color: #ffffff;
+
+$menu-sub-menu-background: #1f2d3d;
+$menu-sub-menu-hover: #001528;
+
+$menu-height: 100vh;
+$menu-width: 64px;
+$menu-not-width: 200px;
+
+:export {
+  menuTextColor: $menu-text-color;
+  menuActiveTextColor: $menu-active-text-color;
+  menuBackgroundColor: $menu-background-color;
+  menuLogoTitleColor: $menu-logo-title-color;
+  menuSubMenuBackground: $menu-sub-menu-background;
+  menuSubMenuHover: $menu-sub-menu-hover;
+  menuHeight: $menu-height;
+  menuWidth: $menu-width;
+  menuNotWidth: $menu-not-width;
+}

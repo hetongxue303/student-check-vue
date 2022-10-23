@@ -476,3 +476,160 @@ npx lint-staged
   }
 }
 ```
+
+### 2.4 样式配置
+
+#### 2.4.1 less/sass
+
+- 添加 `less/sass` 处理器
+
+```shell
+# less
+npm install less less-loader node-less -D
+# sass
+npm install sass sass-loader node-sass -D
+```
+
+- 添加样式文件
+
+`src/assets/styles/index.scss`
+
+```scss
+@import 'transition.scss';
+@import 'variable.scss';
+@import 'mixin.scss';
+
+/* 父容器 */
+html,
+body,
+#app {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  background-color: white;
+  box-sizing: border-box;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft
+      YaHei, Arial, sans-serif;
+}
+
+/*设置进度条颜色  不配置时为默认颜色*/
+#nprogress .bar {
+  background: rgba(245, 208, 25, 0.5) !important;
+}
+
+/*设置滚动条样式*/
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+/*定义滚动条轨道 内阴影+圆角*/
+::-webkit-scrollbar-track {
+  border-radius: 10px;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+/*定义滑块 内阴影+圆角*/
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px rgba(26, 25, 25, 0.3);
+  background-color: rgba(0, 0, 0, 0.1);
+}
+```
+
+`src/assets/styles/mixin.scss`
+
+```scss
+@mixin content-ful {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+```
+
+`src/assets/styles/transition.scss`
+
+```scss
+// 全局动画
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.fade-transform--move,
+.fade-transform-leave-active,
+.fade-transform-enter-active {
+  transition: all 0.5s;
+}
+
+.fade-transform-leave-active {
+  position: absolute;
+}
+
+.fade-transform-enter {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+
+.fade-transform-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+// 面包屑动画
+.breadcrumb-enter-active,
+.breadcrumb-leave-active {
+  transition: all 0.5s;
+}
+
+.breadcrumb-enter,
+.breadcrumb-leave-active {
+  opacity: 0;
+  transform: translateX(20px);
+}
+
+.breadcrumb-move {
+  transition: all 0.5s;
+}
+
+.breadcrumb-leave-active {
+  position: absolute;
+}
+```
+
+`src/assets/styles/variable.scss`
+
+```scss
+/****************************** 菜单相关样式变量 ******************************/
+$menu-text-color: #fff;
+$menu-active-text-color: #ffd04b;
+$menu-background-color: #545c64;
+$menu-logo-title-color: #ffffff;
+
+$menu-sub-menu-background: #1f2d3d;
+$menu-sub-menu-hover: #001528;
+
+$menu-height: 100vh;
+$menu-width: 64px;
+$menu-not-width: 200px;
+
+:export {
+  menuTextColor: $menu-text-color;
+  menuActiveTextColor: $menu-active-text-color;
+  menuBackgroundColor: $menu-background-color;
+  menuLogoTitleColor: $menu-logo-title-color;
+  menuSubMenuBackground: $menu-sub-menu-background;
+  menuSubMenuHover: $menu-sub-menu-hover;
+  menuHeight: $menu-height;
+  menuWidth: $menu-width;
+  menuNotWidth: $menu-not-width;
+}
+```
