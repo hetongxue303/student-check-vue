@@ -1,5 +1,8 @@
 <script setup lang="ts"></script>
 
-<template>hello word！</template>
+<template>
+  你好世界
+  <router-view />
+</template>
 
 <style scoped></style>

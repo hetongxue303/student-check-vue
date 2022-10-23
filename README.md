@@ -70,6 +70,7 @@ npm install @types/node -D
 - 配置 `vite.config.ts`
 
 ```ts
+// vite.config.ts
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { resolve } from 'path'
@@ -267,7 +268,21 @@ module.exports = {
   },
   // 0 = off, 1 = warn, 2 = error
   rules: {
-    'import/no-extraneous-dependencies': 0
+    '@typescript-eslint/no-empty-function': 0,
+    '@typescript-eslint/explicit-function-return-type': 0,
+    '@typescript-eslint/explicit-module-boundary-types': 0,
+    '@typescript-eslint/interface-name-prefix': 0,
+    '@typescript-eslint/no-unused-vars': 0,
+    'import/order': 0,
+    'import/no-unresolved': 0,
+    'import/extensions': 0,
+    'import/prefer-default-export': 0,
+    'import/no-extraneous-dependencies': [2, { devDependencies: true }],
+    'no-console': 1,
+    'no-unused-vars': 0,
+    'vue/multi-word-component-names': 0,
+    'vue/valid-template-root': 0,
+    'prettier/prettier': 0
   }
 }
 ```
@@ -297,7 +312,7 @@ dist/*
 ```json
 {
   "scripts": {
-    "lint": "eslint . --ext .vue,.js,.ts,.jsx,.tsx --fix"
+    "lint": "eslint  {**/*,*}.{js,ts,jsx,tsx,html,vue} --fix"
   }
 }
 ```
@@ -313,11 +328,12 @@ npm install vite-plugin-eslint
 - 修改 `vite.config.ts`
 
 ```ts
+// vite.config.ts
 import eslintPlugin from 'vite-plugin-eslint'
 
 plugins: [
   eslintPlugin({
-    include: ['src/**/*.ts', 'src/**/*.vue', 'src/*.ts', 'src/*.vue'],
+    include: ['{**/*,*}.{js,ts,jsx,tsx,html,vue}'],
     cache: false
   })
 ]
@@ -426,7 +442,7 @@ public/*
 ```json
 {
   "scripts": {
-    "prettier": "prettier --write ./**/*.{vue,ts,tsx,js,jsx,css,less,scss,json}"
+    "prettier": "prettier --write {**/*,*}.{vue,css,scss,less,json,js,ts,jsx,tsx}"
   }
 }
 ```
@@ -471,15 +487,15 @@ npx lint-staged
     }
   },
   "lint-staged": {
-    "*.{js,vue,ts,jsx,tsx}": ["npm run lint", "npm run prettier", "git add"],
-    "*.{html,css,less,scss,md}": ["npm run prettier", "git add"]
+    "*.{js,vue,ts,jsx,tsx}": ["npm run lint", "npm run prettier"],
+    "*.{html,css,less,scss,md}": ["npm run prettier"]
   }
 }
 ```
 
 ### 2.4 样式配置
 
-#### 2.4.1 less/sass
+#### 样式文件
 
 - 添加 `less/sass` 处理器
 
@@ -490,9 +506,7 @@ npm install less less-loader node-less -D
 npm install sass sass-loader node-sass -D
 ```
 
-- 添加样式文件
-
-`src/assets/styles/index.scss`
+- 全局样式 `src/assets/styles/index.scss`
 
 ```scss
 @import 'transition.scss';
@@ -540,7 +554,7 @@ body,
 }
 ```
 
-`src/assets/styles/mixin.scss`
+- 混入 `src/assets/styles/mixin.scss`
 
 ```scss
 @mixin content-ful {
@@ -550,7 +564,7 @@ body,
 }
 ```
 
-`src/assets/styles/transition.scss`
+- 动画 `src/assets/styles/transition.scss`
 
 ```scss
 // 全局动画
@@ -605,7 +619,7 @@ body,
 }
 ```
 
-`src/assets/styles/variable.scss`
+- 常量 `src/assets/styles/variable.scss`
 
 ```scss
 /****************************** 菜单相关样式变量 ******************************/
@@ -632,4 +646,585 @@ $menu-not-width: 200px;
   menuWidth: $menu-width;
   menuNotWidth: $menu-not-width;
 }
+```
+
+- 全局注册样式
+
+```ts
+// src/main.ts
+import './assets/styles/index.scss'
+```
+
+#### element plus
+
+- 安装依赖
+
+```shell
+# element plus
+npm install element-plus --save
+# element plus icon
+npm install @element-plus/icons-vue
+```
+
+- 配置 element plus
+
+```ts
+// src/plugins/element-plus.ts
+import { App } from 'vue'
+import ElementPlus from 'element-plus'
+import 'element-plus/dist/index.css'
+import locale from 'element-plus/es/locale/lang/zh-cn'
+import * as Icons from '@element-plus/icons-vue'
+
+export default {
+  install(app: App) {
+    app.use(ElementPlus, {
+      locale,
+      size: 'default' || 'small' || 'large'
+    })
+    Object.keys(Icons).forEach((key: string) => {
+      app.component(key, Icons[key as keyof typeof Icons])
+    })
+  }
+}
+```
+
+- 全局注册
+
+```ts
+// src/main.ts
+import { createApp } from 'vue'
+import App from './App.vue'
+
+import ElementPlus from './plugins/element-plus'
+
+const app = createApp(App)
+
+app.use(ElementPlus).mount('#app')
+```
+
+#### animate.css
+
+如何使用：[使用详情](https://animate.style/)
+
+- 安装依赖
+
+```shell
+npm install animate.css --save
+```
+
+- 全局注册动画
+
+_在`src/assets/styles/index.scss`中添加下列代码_
+
+```scss
+// src/assets/styles/index.scss
+@import 'animate.css';
+```
+
+#### windi css
+
+官网：[Windi Css](https://cn.windicss.org/) 使用
+：[使用详情](https://cn.windicss.org/utilities/general/colors.html)
+
+- 安装依赖
+
+```shell
+npm install windicss vite-plugin-windicss -D
+```
+
+- 修改 `vite.config.ts`
+
+```ts
+// vite.config.ts
+import WindiCSS from 'vite-plugin-windicss'
+
+export default {
+  plugins: [WindiCSS()]
+}
+```
+
+- 全局注册样式
+
+```ts
+// src/main.ts
+import 'virtual:windi.css'
+```
+
+### 2.5 vue-router
+
+- 添加依赖
+
+```shell
+npm install vue-router@latest
+# 配合nProgress使用
+npm install nprogress --save
+npm install @types/nprogress -D
+```
+
+- 配置 vue-router
+
+```ts
+// src/router/index.ts
+import {
+  createRouter,
+  createWebHistory,
+  RouteRecordRaw,
+  useRoute
+} from 'vue-router'
+import routes from './routes'
+import NProgress from '../plugins/nProgress'
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes
+})
+
+const WITHE_LIST: string[] = ['/login']
+
+router.beforeEach((to, from, next) => {
+  NProgress.start()
+  next()
+  NProgress.done()
+})
+
+router.afterEach(() => {})
+
+export default router
+```
+
+- 配置 nProgress
+
+```ts
+// src/plugins/nProgress.ts
+import nProgress from 'nprogress'
+import 'nprogress/nprogress.css'
+
+export default nProgress.configure({
+  easing: 'linear', // 动画方式
+  speed: 500, // 递增进度条的速度
+  showSpinner: false, // 是否使用进度环
+  minimum: 0.3, // 初始化最小百分比
+  trickleSpeed: 200, // 自动递进间隔速度
+  parent: 'body' // 指定父容器
+})
+```
+
+- 全局注册
+
+```ts
+// src/main.ts
+import { createApp } from 'vue'
+import App from './App.vue'
+
+import router from './router'
+
+const app = createApp(App)
+
+app.use(router).mount('#app')
+```
+
+### pinia
+
+- 安装依赖
+
+```shell
+npm install pinia
+# 这个插件如果用不着可以不装
+npm install pinia-plugin-persistedstate
+```
+
+- 配置 pinia
+
+```ts
+// src/store/index.ts
+import { createPinia } from 'pinia'
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
+
+export default createPinia().use(piniaPluginPersistedstate)
+
+// src/store/modules/user.ts
+import { defineStore } from 'pinia'
+
+export const useMainStore = defineStore('main', {
+  state: (): IUserStore => {
+    return {}
+  },
+  getters: {},
+  actions: {},
+  persist: {
+    key: 'USER'
+  }
+})
+```
+
+- 全局注册
+
+```ts
+// src/main.ts
+import { createApp } from 'vue'
+import App from './App.vue'
+
+import pinia from './store'
+
+const app = createApp(App)
+
+app.use(pinia).mount('#app')
+```
+
+### axios
+
+- 安装依赖
+
+```shell
+npm install axios --save
+```
+
+- 添加 token 处理类
+
+```ts
+// src/utils/anth.ts(用于配合axios使用)
+import { useCookies } from '@vueuse/integrations/useCookies'
+
+const cookies = useCookies()
+const Authorization = 'Authorization'
+
+export const getToken = (): string => {
+  return cookies.get(Authorization)
+}
+
+export const removeToken = () => {
+  cookies.remove(Authorization)
+}
+
+export const setToken = (token: string) => {
+  cookies.set(Authorization, token)
+}
+```
+
+- 配置 axios
+
+```ts
+// src/utils/request.ts
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
+import { useRouter } from 'vue-router'
+import NProgress from '../plugins/nProgress'
+import { ElNotification } from 'element-plus'
+import { getToken } from './auth'
+
+axios.create({
+  baseURL: import.meta.env.VITE_GLOB_BASE_URL,
+  timeout: 60 * 1000,
+  withCredentials: true,
+  timeoutErrorMessage: '请求超时',
+  headers: {
+    'Content-Type': 'application/json;charset=utf-8'
+  }
+})
+
+axios.interceptors.request.use(
+  async (config: AxiosRequestConfig) => {
+    NProgress.start()
+    // 让每个请求携带自定义token
+    if (getToken() && config.headers) {
+      config.headers.Authorization = getToken()
+    }
+    return config
+  },
+  (error: any) => {
+    ElNotification.error('未知错误')
+    return Promise.reject(error)
+  }
+)
+
+axios.interceptors.response.use(
+  async (response: AxiosResponse) => {
+    if (response.status !== 200 || response.data.code !== 200) {
+      switch (response.status as number) {
+        case 401:
+          ElNotification.warning('您未登录，请先登录')
+          const router = useRouter()
+          await router.replace('/login')
+          break
+        case 403:
+          ElNotification.warning('您无权访问，请联系管理员')
+          break
+        // 50008:非法令牌    50012:其他客户端登录    50014:令牌过期
+        case 50008 | 50012 | 50014:
+          ElNotification.warning('您的登录信息已失效，请您再次登录')
+          break
+      }
+    }
+    NProgress.done()
+    return response
+  },
+  (error: any) => {
+    ElNotification.error('服务器异常')
+    return Promise.reject(error)
+  }
+)
+
+export default axios
+```
+
+- 使用案例
+
+```ts
+import axios from '../../utils/request'
+
+const baseAPI = import.meta.env.VITE_GLOB_BASIC_API
+
+export const test = () => {
+  return axios({
+    method: 'GET',
+    url: `${baseAPI}/test`
+  })
+}
+```
+
+## 其他插件
+
+### qs
+
+- 安装依赖
+
+```shell
+npm install qs --save
+npm install @types/qs -D
+```
+
+- 使用
+
+```ts
+import * as qs from 'qs'
+```
+
+### vueUse
+
+- 安装依赖
+
+```shell
+npm install @vueuse/core
+```
+
+- 基本使用
+
+更多使用请访问：[vueUse](https://vueuse.org/)
+
+```vue
+<template>
+  <h1>鼠标坐标:{{ x }},{{ y }}</h1>
+</template>
+<script lang="ts" setup>
+import { useMouse } from '@vueuse/core'
+
+const { x, y } = useMouse()
+</script>
+```
+
+### cookie
+
+- 安装依赖
+
+```shell
+# cookie依赖安装
+npm install universal-cookie
+# 由于universal-cookie依赖于vueuse/integrations 故需要安装
+npm install @vueuse/integrations
+```
+
+- 使用
+
+```ts
+import { useCookies } from '@vueuse/integrations/useCookies'
+```
+
+### jsencrypt
+
+- 安装依赖
+
+```shell
+npm install jsencrypt --save
+```
+
+- 创建工具类 `jsencrypt.ts`
+
+```ts
+// src/utils/jsencrypt.ts
+import JSEncrypt from 'jsencrypt/bin/jsencrypt.min'
+
+const publicKey =
+  'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDkoliRyO9NEkbuxirTrvANBjvn\n' +
+  'dLC4npst+e2IubgEuzuNOwg77kj1SKZcsg0rgusFsg+QhNDfzgNp4XacXYvNbYF2\n' +
+  'NwKcLaNOJJ2JP+Jh6Ll1p41WZWLXCiFBc9axTU1T8FmnoSdqB4bLRz628iDV/jsG\n' +
+  'ggxeLuyKvpKpLqMVUQIDAQAB'
+
+const privateKey =
+  'MIICeQIBADANBgkqhkiG9w0BAQEFAASCAmMwggJfAgEAAoGBAOSiWJHI700SRu7G\n' +
+  'KtOu8A0GO+d0sLiemy357Yi5uAS7O407CDvuSPVIplyyDSuC6wWyD5CE0N/OA2nh\n' +
+  'dpxdi81tgXY3Apwto04knYk/4mHouXWnjVZlYtcKIUFz1rFNTVPwWaehJ2oHhstH\n' +
+  'PrbyINX+OwaCDF4u7Iq+kqkuoxVRAgMBAAECgYEA1IxQhockYKQDKWs02UIijBkl\n' +
+  'i5Eh0SAx51YXiyoMdumQ/UTJ7N0jGlSFxFsKf07gKpVUfufaPpWI+t/NoqQcmAVK\n' +
+  'JEqRlftUpUMWnmgawY58sH7nVAbx4mz6DKIWYfalPU6WajV85zmKNrTeqJaC58Hy\n' +
+  '16kXhh4TL3TSQQ0m1SECQQD9hriiU6WgVofEL9pIZ2oOUkJomh2TEAVvr2H8wz+x\n' +
+  'ru5JcNZLrIgf2syu1fAV55rnxOAivewmZIIRLT4WgR+dAkEA5t1yfcaRDIlnl9nX\n' +
+  'JDdng/QxOOrBbhGIlsDtdOUoBXUeXVqD/LuhJQmeT3FzngfGNvsn6RIYBg4kH6Ls\n' +
+  '0t7QRQJBAPQQZOCIbDMN+keI1bfMLpI46ItwijYQP1uEWG2PvVqdj/INeY+COc2I\n' +
+  'wnExrZ44x6yFoExxz8wqB/jnOBVMGxUCQQCLBaVRWka0fvXT+olUtMxwKJePh8Zt\n' +
+  'ar+O0KTttKUSDEH5w20hvzc933nmqxINgu744utYrd2rn85fArSME0LlAkEA/R5I\n' +
+  'Ae6A8NQDhSnstfKXB73mQAmAkF27siUBSlg57eBLPBJ854LtOCZ1/itdbRGPm3g0\n' +
+  'IPKI7Em1/0lXtTisQQ=='
+
+/**
+ * 文本加密
+ *
+ * @param text 明文
+ */
+export const encrypt = (text: string): string => {
+  const encryptor = new JSEncrypt()
+  encryptor.setPublicKey(publicKey)
+  return encryptor.encrypt(text)
+}
+
+/**
+ * 文本解密
+ *
+ * @param text 密文
+ */
+export const decrypt = (text: string): string => {
+  const encryptor = new JSEncrypt()
+  encryptor.setPrivateKey(privateKey)
+  return encryptor.decrypt(text)
+}
+```
+
+### md5
+
+- 安装依赖
+
+```shell
+npm install js-md5
+npm install @types/js-md5 -D
+```
+
+- 创建工具类 `encryptMD5.ts`
+
+```ts
+// src/hook/encryptMD5.ts
+import md5 from 'js-md5'
+
+/**
+ * 密码加密后在发送请求
+ * @param password 密码
+ */
+export const encryptMD5 = (password: string): string => {
+  return md5(md5(password).split('').reverse().join(''))
+}
+```
+
+### base64
+
+- 安装依赖
+
+```shell
+npm install @vueuse/core
+```
+
+- 使用
+
+```ts
+import { Ref, ref } from 'vue'
+import { useBase64 } from '@vueuse/core'
+
+const text = ref('')
+const { base64 } = useBase64(text)
+```
+
+## 封装组件
+
+### svgIcon
+
+- 安装依赖
+
+```shell
+npm install vite-plugin-svg-icons -D
+```
+
+- 创建 svg 组件
+
+```vue
+<template>
+  <svg
+    :aria-hidden="true"
+    class="svg-icon"
+    :style="{
+      color: color,
+      height: size + 'em',
+      width: size + 'em',
+      fill: fill
+    }"
+  >
+    <use :xlink:href="symbolId" />
+  </svg>
+</template>
+
+<script setup lang="ts">
+import { computed, PropType } from 'vue'
+
+const props = defineProps({
+  prefix: { type: String as PropType<string>, default: 'icon' },
+  name: { type: String as PropType<string>, required: true },
+  color: { type: String as PropType<string>, default: '' },
+  size: { type: Number as PropType<number>, default: 1 },
+  fill: { type: String as PropType<string>, default: 'currentColor' }
+})
+
+const symbolId = computed(() => `#${props.prefix}-${props.name}`)
+</script>
+
+<style scoped lang="scss">
+.svg-icon {
+  vertical-align: -0.15em;
+  overflow: hidden;
+}
+</style>
+```
+
+- 修改 `vite.config.ts`
+
+```ts
+// vite.config.ts
+import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
+import { resolve } from 'path'
+
+export default defineConfig({
+  plugins: [
+    createSvgIconsPlugin({
+      // svg图标存放路径
+      iconDirs: [resolve(process.cwd(), 'src/assets/icons/svg')],
+      symbolId: 'icon-[dir]-[name]'
+    })
+  ]
+})
+```
+
+- 全局注册
+
+```ts
+// src/main.ts
+import { createApp } from 'vue'
+import App from './App.vue'
+
+import 'virtual:svg-icons-register'
+import svgIcon from '@components/svgIcon/Index.vue'
+
+const app = createApp(App)
+
+app.component('svg-icon', svgIcon).mount('#app')
+```
+
+- 使用组件
+
+```vue
+<svg-icon name="bug" />
 ```
